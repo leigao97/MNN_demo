@@ -25,8 +25,8 @@ set_target_properties(
         ${PROJECT_SOURCE_DIR}/libs/x86/libMNN_Express.dylib
 )
 
-add_executable(mnncore src/demo.cpp)
-target_include_directories(mnncore PUBLIC includes includes/MNN includes/MNNTrain)
-target_link_libraries( mnncore MNN )
-target_link_libraries( mnncore MNNTrain )
-target_link_libraries( mnncore MNN_Express )
+add_executable(demo src/demo.cpp)
+target_include_directories(demo PUBLIC includes includes/MNN includes/MNNTrain)
+target_link_libraries(demo MNN)
+target_link_libraries(demo MNNTrain)
+target_link_libraries(demo MNN_Express)
