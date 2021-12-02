@@ -26,7 +26,17 @@ set_target_properties(
 )
 
 add_executable(demo src/demo.cpp)
-target_include_directories(demo PUBLIC includes includes/MNN includes/MNNTrain)
+target_include_directories(demo PUBLIC 
+                                includes
+                                includes/MNNTrain/data
+                                includes/MNNTrain/datasets
+                                includes/MNNTrain/grad
+                                includes/MNNTrain/models
+                                includes/MNNTrain/nn
+                                includes/MNNTrain/optimizer
+                                includes/MNNTrain/parameters
+                                includes/MNNTrain/transformer
+                                )
 target_link_libraries(demo MNN)
 target_link_libraries(demo MNNTrain)
 target_link_libraries(demo MNN_Express)
