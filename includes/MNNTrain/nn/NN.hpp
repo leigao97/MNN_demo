@@ -9,11 +9,10 @@
 #ifndef MNN_Train_NN_hpp
 #define MNN_Train_NN_hpp
 #include <MNN/expr/ExprCreator.hpp>
-#include "Distributions.hpp"
-#include "Module.hpp"
+#include <MNN/expr/Module.hpp>
 #include <vector>
 namespace MNN {
-namespace Train {
+namespace Express {
 class Initializer;
 
 class MNN_PUBLIC NN {
@@ -29,7 +28,7 @@ public:
     };
     enum FeatureScaleStatMethod {
         PerTensor = 0,
-        PerChannel = 1
+        PerChannel = 1 // Depercerate
     };
     /* Unlike enum in class, class in class need be dllimport or dllexport explcility.
        Compiling in other system will not be affected.
@@ -74,7 +73,6 @@ public:
     static Module* ConvInt8(const ConvParameters& parameters, int bits,
                                             FeatureScaleStatMethod featureMethod = PerChannel,
                                             ScaleUpdateMethod method = MovingAverage);
-    static Module* ConvOctave(const ConvParameters& parameters, float inFactor, float outFactor);
     static Module* Conv(const ConvParameters& parameters);
     static Module* ConvBNReluFused(std::vector<std::shared_ptr<Module> > modules,
                                                    NN::FeatureScaleStatMethod featureScaleStatMethod = PerTensor,
@@ -86,8 +84,11 @@ public:
         static ConvParameters ExtractConvolution(Express::EXPRP expr);
 
         // Extract BatchNormal and Dropout
-        static Module* ExtractNotRunableOp(Express::EXPRP expr);
+        static Module* ExtractNotRunableOp(Express::EXPRP expr, const std::map<std::string, SubGraph>& subgraphs);
     };
+    
+    static bool turnQuantize(Module* module, const int bits = 8, NN::FeatureScaleStatMethod featureScaleStatMethod = NN::PerTensor, NN::ScaleUpdateMethod scaleUpdateMethod = NN::MovingAverage);
+    static Module* extract(std::vector<Express::VARP> inputs, std::vector<Express::VARP> outputs, bool fortrain, const std::map<std::string, SubGraph>& subGraph = {});
 };
 
 } // namespace Train
