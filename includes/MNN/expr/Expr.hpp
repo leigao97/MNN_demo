@@ -18,7 +18,6 @@
 #include <MNN/MNNDefine.h>
 
 namespace MNN {
-struct BufferStorage;
 struct OpT;
 struct Op;
 struct NetT;
@@ -171,6 +170,7 @@ private:
     EXPRP mFrom;
     int mFromIndex;
 };
+struct BufferStorage;
 class MNN_PUBLIC Expr {
 public:
     struct Inside;
