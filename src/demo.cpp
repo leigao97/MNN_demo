@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
     exe->setGlobalExecutorConfig(MNN_FORWARD_CPU, config, 4);
     std::cout << config.precision << std::endl; // Precision_Low = 2
-    std::cout << MNN::Express::Executor::getGlobalExecutor()->getCurrentRuntimeStatus(MNN::STATUS_SUPPORT_FP16) << std::endl;  // True for FP16
+    std::cout << exe->getCurrentRuntimeStatus(MNN::STATUS_SUPPORT_FP16) << std::endl;  // True for FP16
 
     std::shared_ptr<SGD> sgd(new SGD(model));
     sgd->setMomentum(0.9f);
