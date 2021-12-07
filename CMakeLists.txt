@@ -4,26 +4,54 @@ project(MNN_demo)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 
-add_library( MNN SHARED IMPORTED )
-set_target_properties(
-        MNN
-        PROPERTIES IMPORTED_LOCATION
-        ${PROJECT_SOURCE_DIR}/libs/x86/libMNN.dylib
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "^Darwin")
+    add_library( MNN SHARED IMPORTED )
+    set_target_properties(
+            MNN
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/x86/libMNN.dylib
+    )
 
-add_library( MNNTrain SHARED IMPORTED )
-set_target_properties(
-        MNNTrain
-        PROPERTIES IMPORTED_LOCATION
-        ${PROJECT_SOURCE_DIR}/libs/x86/libMNNTrain.dylib
-)
+    add_library( MNNTrain SHARED IMPORTED )
+    set_target_properties(
+            MNNTrain
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/x86/libMNNTrain.dylib
+    )
 
-add_library( MNN_Express SHARED IMPORTED )
-set_target_properties(
-        MNN_Express
-        PROPERTIES IMPORTED_LOCATION
-        ${PROJECT_SOURCE_DIR}/libs/x86/libMNN_Express.dylib
-)
+    add_library( MNN_Express SHARED IMPORTED )
+    set_target_properties(
+            MNN_Express
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/x86/libMNN_Express.dylib
+    )
+endif()
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "^Android")
+    add_library( MNN SHARED IMPORTED )
+    set_target_properties(
+            MNN
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/arm64-v8a/libMNN.so
+    )
+
+    add_library( MNNTrain SHARED IMPORTED )
+    set_target_properties(
+            MNNTrain
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/arm64-v8a/libMNNTrain.so
+    )
+
+    add_library( MNN_Express SHARED IMPORTED )
+    set_target_properties(
+            MNN_Express
+            PROPERTIES IMPORTED_LOCATION
+            ${PROJECT_SOURCE_DIR}/libs/arm64-v8a/libMNN_Express.so
+    )
+endif()
+
+# message(${CMAKE_SYSTEM_PROCESSOR})
+# message(${CMAKE_SYSTEM_NAME})
 
 add_executable(demo src/demo.cpp)
 target_include_directories(demo PUBLIC 

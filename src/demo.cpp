@@ -14,13 +14,22 @@ using namespace MNN::Express;
 
 int main(int argc, char *argv[]) {
     std::string dataPath = argv[1];
-    
+    int epoch_total = atoi(argv[2]);
+
     // Create model
     std::shared_ptr<Module> model(new Model::Lenet);
 
     auto exe = Executor::getGlobalExecutor();
     BackendConfig config;
-    exe->setGlobalExecutorConfig(MNN_FORWARD_CUDA, config, 4);
+    if (argc > 3) {
+        if (strcmp(argv[3], "fp16" ) == 0) {
+            config.precision = BackendConfig::Precision_Low;  
+        }
+    }
+    exe->setGlobalExecutorConfig(MNN_FORWARD_CPU, config, 4);
+    std::cout << config.precision << std::endl; // Precision_Low = 2
+    std::cout << MNN::Express::Executor::getGlobalExecutor()->getCurrentRuntimeStatus(MNN::STATUS_SUPPORT_FP16) << std::endl;  // True for FP16
+
     std::shared_ptr<SGD> sgd(new SGD(model));
     sgd->setMomentum(0.9f);
     // sgd->setMomentum2(0.99f);
@@ -46,7 +55,7 @@ int main(int argc, char *argv[]) {
 
     size_t testIterations = testDataLoader->iterNumber();
 
-    for (int epoch = 0; epoch < 50; ++epoch) {
+    for (int epoch = 0; epoch < epoch_total; ++epoch) {
         model->clearCache();
         exe->gc(Executor::FULL);
         exe->resetProfile();
@@ -84,7 +93,7 @@ int main(int argc, char *argv[]) {
                     _100Time.reset();
                     lastIndex = i;
                 }
-                sgd->step(loss);
+                sgd->step(_Multiply(loss, _Const(5.0f)));  // Multiply by a scalar
             }
         }
         Variable::save(model->parameters(), "mnist.snapshot.mnn");
