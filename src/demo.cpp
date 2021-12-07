@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
                     _100Time.reset();
                     lastIndex = i;
                 }
-                sgd->step(_Multiply(loss, _Const(5.0f)));  // Multiply by a scalar
+                sgd->step(_Multiply(loss, _Const(5.0f)));  // TODO: FP16 training fails due to loss over/underflows.
             }
         }
         Variable::save(model->parameters(), "mnist.snapshot.mnn");
