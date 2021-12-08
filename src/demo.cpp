@@ -15,20 +15,20 @@ using namespace MNN::Express;
 int main(int argc, char *argv[]) {
     std::string dataPath = argv[1];
     int epoch_total = atoi(argv[2]);
+    float scalar = std::stof(argv[3]);
+    float rate = std::stof(argv[4]);
 
     // Create model
     std::shared_ptr<Module> model(new Model::Lenet);
 
     auto exe = Executor::getGlobalExecutor();
     BackendConfig config;
-    if (argc > 3) {
-        if (strcmp(argv[3], "fp16" ) == 0) {
-            config.precision = BackendConfig::Precision_Low;  
-        }
+    if (strcmp(argv[5], "fp16" ) == 0) {
+        config.precision = BackendConfig::Precision_Low;  
     }
     exe->setGlobalExecutorConfig(MNN_FORWARD_CPU, config, 4);
     std::cout << config.precision << std::endl; // Precision_Low = 2
-    std::cout << exe->getCurrentRuntimeStatus(STATUS_SUPPORT_FP16) << std::endl;  // True for FP16
+    std::cout << exe->getCurrentRuntimeStatus(STATUS_SUPPORT_FP16) << std::endl;  // True for FP16 support
 
     std::shared_ptr<SGD> sgd(new SGD(model));
     sgd->setMomentum(0.9f);
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                 auto predict = model->forward(example.first[0]);
                 auto loss    = _CrossEntropy(predict, newTarget);
 
-                float rate   = LrScheduler::inv(0.01, epoch * iterations + i, 0.0001, 0.75);
+                // float rate   = LrScheduler::inv(0.01, epoch * iterations + i, 0.0001, 0.75);
                 sgd->setLearningRate(rate);
                 if (moveBatchSize % (10 * batchSize) == 0 || i == iterations - 1) {
                     std::cout << "epoch: " << (epoch);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
                     _100Time.reset();
                     lastIndex = i;
                 }
-                sgd->step(_Multiply(loss, _Const(5.0f)));  // TODO: FP16 training fails due to loss over/underflows.
+                sgd->step(_Multiply(loss, _Const(scalar)));  // TODO: FP16 training fails due to loss over/underflows.
             }
         }
         Variable::save(model->parameters(), "mnist.snapshot.mnn");
